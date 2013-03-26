@@ -24,7 +24,10 @@ $(document).ready(function(){
 	$('#input_box').bind('change', function() {
 
 	    var curent_text = $(this).text();
+
 	    $("#text_box").html(curent_text);
+	    $("#counter").text(curent_text.length);
+
 	   	var savedSel = rangy.saveSelection();
 
 	    if(curent_text.length > settings.limit){
