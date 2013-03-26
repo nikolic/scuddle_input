@@ -1,0 +1,24 @@
+
+#content {
+    margin-left: 330px;
+}
+
+
+
+/* SCUDDLE INPUT */
+
+#input_box{
+    border: 2px silver dotted;
+    width: 600px;
+    height: 60px;
+}
+
+#input_box em{
+    background-color: red; 
+    color:white;
+}
+
+/* SCUDDLE INPUT */
+
+
+
