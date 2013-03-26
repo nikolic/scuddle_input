@@ -4,7 +4,8 @@ var settings = {
 	limit : 40,
 	timeout : 50,
 	open_tag : "<em>",
-	close_tag : "</em>"
+	close_tag : "</em>",
+	node_name : "EM"
 };
 
 $(document).ready(function(){
@@ -23,6 +24,8 @@ $(document).ready(function(){
 	$('#input_box').bind('change', function() {
 
 	    var curent_text = $(this).text();
+	    $("#text_box").html(curent_text);
+	   	var savedSel = rangy.saveSelection();
 
 	    if(curent_text.length > settings.limit){
 	    	$('#input_box').html(parse_text(curent_text));
@@ -40,8 +43,9 @@ $(document).ready(function(){
 	     	}
 	    }
 	    else{
-	    	$('#input_box').html(curent_text);
-	 //   	rangy.restoreSelection(savedSel,true);
+
+	    //	$('#input_box').html(curent_text);
+	 	  	rangy.restoreSelection(savedSel,true);
 	    }
 
 	})
@@ -57,7 +61,7 @@ var parse_text = function(text){
 function findEmNode(nodes){
 	var em_node = null;
 	$.each(nodes, function(index, node){
-		if(node.nodeName == "EM" || node.nodeName == "em"){
+		if(node.nodeName.toUpperCase() === settings.node_name){
 			em_node = node;
 		}
 	});
