@@ -1,7 +1,7 @@
-var LIMIT = 40;
-var TIMEOUT = 50;
+// var LIMIT = 40;
+// var TIMEOUT = 50;
 var settings = {
-	limit : 40,
+	limit : 10,
 	timeout : 50,
 	open_tag : "<em>",
 	close_tag : "</em>",
@@ -28,28 +28,43 @@ $(document).ready(function(){
 	    $("#text_box").html(curent_text);
 	    $("#counter").text(curent_text.length);
 
-	   	var savedSel = rangy.saveSelection();
+	    var old_selection = rangy.getSelection();
 
-	    if(curent_text.length > settings.limit){
-	    	$('#input_box').html(parse_text(curent_text));
-	 		 var em_node = findEmNode(document.getElementById('input_box').childNodes);
-	 		 if(em_node != null){
-				var range = rangy.createRange();
-				var sel = rangy.getSelection();
-				range.setStart(em_node, 1);
-				range.collapse(true);
-				sel.removeAllRanges();
-				sel.addRange(range);
-	     	}
-	     	else{
-	     		console.log(em_node, "node does not exist");
-	     	}
-	    }
-	    else{
+	    var old_node_name = old_selection.anchorNode.parentNode.nodeName;
+	    var old_offset = old_selection.anchorOffset;
 
-	    //	$('#input_box').html(curent_text);
-	 	  	rangy.restoreSelection(savedSel,true);
-	    }
+
+    	$('#input_box').html(parse_text(curent_text));
+    	var selector = document.getElementById('input_box');
+
+    	var active_node = null;
+    	if(old_node_name == "EM"){
+    		active_node = findEmNode(selector.childNodes);
+    		active_node = active_node.childNodes[0];
+    	}else{
+    		active_node = selector.childNodes[0];
+    		// first character in em node.
+    		if(old_offset == settings.limit + 1){
+    			active_node = findEmNode(selector.childNodes);
+    			active_node = active_node.childNodes[0];
+    			old_offset = old_offset - settings.limit;
+    		}
+
+    	}
+
+ 		if(active_node != null && active_node != undefined){
+			var range = rangy.createRange();
+			var sel = rangy.getSelection();
+
+			range.setStart(active_node, old_offset);
+		///	range.setEnd(em_node,1);
+			range.collapse(true);
+			sel.removeAllRanges();
+			sel.addRange(range);
+     	}
+     	else{
+     		console.log(active_node, "node does not exist");
+     	}
 
 	})
 
@@ -57,7 +72,7 @@ $(document).ready(function(){
 
 
 var parse_text = function(text){
-   return text.substring(0, LIMIT) + settings.open_tag + text.substring(LIMIT,text.length) + settings.close_tag;
+   return text.substring(0, settings.limit) + settings.open_tag + text.substring(settings.limit,text.length) + settings.close_tag;
 };
 
 
