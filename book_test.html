@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="keywords" content="buy and rent, buy, rent, real estate, rent and buy, realty for buy, realty for sell, realty for rent" />
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script >
+
+function test1() {
+	var p1 = document.getElementById('p1');
+	var helloNode = p1.firstChild.firstChild;
+	var worldNode = p1.lastChild;
+	range = document.createRange();
+	range.setStart(helloNode, 2);
+	range.setEnd(worldNode, 3);
+	range.deleteContents();
+}
+
+
+function test2() {
+	var p1 = document.getElementById('p1'),
+	helloNode = p1.firstChild.firstChild,
+	worldNode = p1.lastChild,
+	range = document.createRange();
+	range.setStart(helloNode, 2);
+	range.setEnd(worldNode, 3);
+	var fragment = range.extractContents();
+	p1.parentNode.appendChild(fragment);
+}
+
+function test3(){
+	var p1 = document.getElementById('p1'),
+	helloNode = p1.firstChild.firstChild,
+	worldNode = p1.lastChild,
+	range = document.createRange();
+	range.setStart(helloNode, 2);
+	range.setEnd(worldNode, 3);
+	var fragment = range.cloneContents();
+	p1.parentNode.appendChild(fragment);
+}
+
+</script>
+	     
+</head>
+<body>
+	<p id="p1"><b>Hello</b> World</p>
+
+</body>
+</html>

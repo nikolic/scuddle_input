@@ -1,0 +1,123 @@
+<html>
+    <head>
+            <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/log4javascript_stub.js"></script>
+    <script type="text/javascript" src="js/core.js"></script>
+    <script type="text/javascript" src="js/dom.js"></script>
+    <script type="text/javascript" src="js/domrange.js"></script>
+    <script type="text/javascript" src="js/wrappedrange.js"></script>
+    <script type="text/javascript" src="js/wrappedselection.js"></script>
+    <script type="text/javascript" src="js/rangy-selectionsaverestore.js"></script>
+
+        <script type="text/javascript">
+            var editorDoc;
+            function InitEditable () {
+                var editor = document.getElementById ("editor");
+
+                if (editor.contentDocument)
+                    editorDoc = editor.contentDocument;
+                else
+                    editorDoc = editor.contentWindow.document;
+                
+                var editorBody = editorDoc.body;
+
+                    // turn off spellcheck
+                if ('spellcheck' in editorBody) {   // Firefox
+                    editorBody.spellcheck = false;
+                }
+
+                if ('contentEditable' in editorBody) {
+                        // allow contentEditable
+                    editorBody.contentEditable = true;
+                }
+                else {  // Firefox before version 3
+                    if ('designMode' in editorDoc) {
+                            // turn on designMode
+                        editorDoc.designMode = "on";                
+                    }
+                }
+            }
+
+            function ToggleBold () {
+                editorDoc.execCommand ('bold', false, null);
+            }
+
+            function ToggleItalic () {
+                editorDoc.execCommand ('italic', false, null);
+            }
+
+            function SetRed () {
+                editorDoc.execCommand ('foreColor', false, "#ff0000");
+            }
+
+            function Delete () {
+                editorDoc.execCommand ('delete', false, null);
+            }
+
+            function SetHighlight(){
+                var colour = "#ff0000";
+
+//                var editor = document.getElementById ("editor");
+                editorDoc.body.focus();
+                var range = rangy.createRange();
+
+                range.setStart(editorDoc.body.firstChild, 10);
+               // console.log(editorDoc.body.childNodes);
+               var lastNode = findLastTextNode(editorDoc.body.childNodes);
+                range.setEnd(lastNode,lastNode.length);
+            //    range.collapse(true);
+
+                var sel = rangy.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+
+                if (!editorDoc.execCommand("HiliteColor", false, colour)) {
+                    editorDoc.execCommand("BackColor", false, colour);
+                }
+
+            }
+
+            function SetDefaultColor(){
+                editorDoc.execCommand("selectAll", false, null);
+                editorDoc.execCommand("removeFormat", false, null);
+            }
+
+            function findLastTextNode(nodes){
+                var lastTextNode = null;
+                $.each(nodes, function(index,node){
+                    if(node.nodeType == 3){
+                        lastTextNode = node;
+                    }
+                });
+                return lastTextNode;
+            }
+
+            
+        </script>
+    </head>
+    <body onload="InitEditable ();">
+        First, write and select some text in the editor.
+        <br />
+        <iframe id="editor" >
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Editable content example</title>
+                <meta charset="utf-8" />
+            </head>
+            <body>
+                Some text in the editor.
+            </body>
+            </html>
+        </iframe>
+        <br /><br />
+        You can use the following buttons to change the appearance of the selected text:
+        <br /><br />
+        <button onclick="ToggleBold ();">Bold</button>
+        <button onclick="ToggleItalic ();">Italic</button>
+        <button onclick="SetRed ();">Set to red</button>
+        <button onclick="SetHighlight ();">Set highlight</button>
+        <button onclick="SetDefaultColor();">SetDefaultColor</button>
+        <button onclick="Delete ();">Delete</button>
+    </body>
+</html>
