@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+-->
+<html>
+<head>
+	<title>UI Color Picker &mdash; CKEditor Sample</title>
+	<meta charset="utf-8">
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+	<script src="../ckeditor.js"></script>
+
+	<link rel="stylesheet" href="sample.css">
+	<style type="text/css">
+		STRONG, B{
+			background-color: yellow !important;
+		}
+		BODY.cke_editable P STRONG{
+			background-color: yellow !important;
+		}
+
+	</style>
+</head>
+<body>
+		<input type="hidden" id="text" value='' />
+		<textarea cols="80" id="editor1" name="editor1" rows="10"></textarea>
+			<div id="text_len"></div>	
+		<script>
+
+			// Replace the <textarea id="editor"> with an CKEditor
+			// instance, using default configurations.
+			CKEDITOR.replace( 'editor1', {
+				uiColor: '#14B8C4',
+				toolbar: [
+					[ 'Bold', 'Italic' ],
+					[ 'TextColor', 'BGColor' ]
+				]
+			});
+
+
+			var editor = CKEDITOR.instances.editor1;
+
+			var MAX_LENGHT = 10;
+
+			$(document).ready(function(){
+
+		       editor.on( 'key', function(e) {
+
+		       		// if(e.data.keyCode == 13 || e.data.keyCode == 8){
+		       		// 	return false;
+		       		// }
+		            var text = editor.getData();
+
+		            $('#text').html(text);
+		            text = $('#text').text();
+
+		            if (text.length > MAX_LENGHT){
+		                   highlight_over();
+		            }
+
+
+
+		            $('#text_len').text(text.length);
+		        });
+
+			});
+
+
+
+
+	// function highlight_over(end_offset ) {
+	// 	// Get the editor instance that we want to interact with.
+	// 	var editor = CKEDITOR.instances.editor1;
+
+	// 	var range = new CKEDITOR.dom.range( editor.document );
+
+	// 	var start_node = new CKEDITOR.dom.node( editor.document.getBody().getChildren().$[0].childNodes[0]);
+
+	// 	var end_node = new CKEDITOR.dom.node( editor.document.getBody().getChildren().$[0].childNodes[0]);
+	// 	range.setStart(start_node, MAX_LENGHT);
+	// 	range.setEnd(end_node, end_offset);
+	// 	editor.getSelection().selectRanges( [ range ] );
+
+
+	// 	editor.execCommand("bold", false, null);
+
+	// 	 range.collapse(false);
+
+	// 	 editor.getSelection().selectRanges( [ range ] );
+
+	// }
+
+
+
+	// function lastChildNode(selector){
+	// 	//editor.document.getBody().getChildren().$[0]
+
+	// 	if(selector.hasChildNodes()){
+
+	// 		if(selector.lastChild.nodeType == 3){
+	// 						console.log(selector.firstChild, "last");
+	// 			return selector.lastChild
+	// 		}
+	// 		else{
+	// 			lastChild(selector.lastChild);
+	// 		}
+
+	// 	}
+	// 	else{
+	// 		console.log("element haven't children");
+	// 	}
+
+	// }
+
+
+
+	// function firstChildNode(selector){
+
+
+	// 	if(selector.hasChildNodes()){
+
+	// 		if(selector.firstChild.nodeType == 3){
+	// 			console.log(selector.firstChild, "first");
+	// 			return selector.firstChild
+	// 		}
+	// 		else{
+	// 			lastChild(selector.firstChild);
+	// 		}
+
+	// 	}
+	// 	else{
+	// 		console.log("element haven't children");
+	// 	}
+
+	// }
+
+
+
+	function highlight_over() {
+		// Get the editor instance that we want to interact with.
+
+		var editor = CKEDITOR.instances.editor1;
+
+		var range = new CKEDITOR.dom.range( editor.document );
+
+		// var start_node = new CKEDITOR.dom.node( firstChildNode(editor.document.getBody().getChildren().$[0]));
+
+		// var end_node = new CKEDITOR.dom.node( lastChildNode(editor.document.getBody().getChildren().$[0]));
+
+		var node_list = editor.document.getBody().getChildren();
+
+		var start_node_obj = find_start_node(inspect_nodes(node_list), MAX_LENGHT);
+
+		var start_node = start_node_obj.node;
+
+		var end_node = find_end_node(inspect_nodes(node_list));
+
+		console.log(start_node_obj,"start node");
+		range.setStart(start_node, start_node_obj.offset);
+		range.setEnd(end_node, end_node.getText().length);
+		editor.getSelection().selectRanges( [ range ] );
+		range.collapse(false);
+
+		// var comm_data = {
+		//     element: 'em',
+		//     styles: { 'background-color': '#E01B6A' }
+		// };
+
+		 //editor.execCommand("bold", false, null);
+		 //editor.execCommand("hiliteColor", { 'background-color': '#E01B6A' });
+		// editor.execCommand('hiliteColor', {
+		//      element: 'em',
+		//      styles: { 'background-color': '#E01B6A' }
+		//  } );
+
+		 exec_command();
+
+		 range.collapse(false);
+
+		 editor.getSelection().selectRanges( [ range ] );
+
+	}
+
+
+	function exec_command(){
+		
+		var style = new CKEDITOR.style( { element: 'strong' } );
+
+		var style_comm = new CKEDITOR.styleCommand( style );
+		
+
+		// editor.addCommand( "ForeColor", new CKEDITOR.dialogCommand( boldStyle ) );
+
+		// var comm = editor.addCommand( "ForeColor", new CKEDITOR.dialogCommand( boldStyle ) );
+		style_comm.exec(CKEDITOR.editor);
+	}
+
+
+	function inspect_nodes(nodes){
+
+		var text_nodes = [];
+		var node = null;
+		for(var i = 0; i < nodes.count(); i++){
+			node = nodes.getItem(i);
+			if(node.type == CKEDITOR.NODE_TEXT){
+				text_nodes.push(node);
+			}
+			else{
+				if(node.type == CKEDITOR.NODE_ELEMENT ){
+					text_nodes = text_nodes.concat(extract_text_nodes(node));
+				}
+			}
+		}
+
+		return text_nodes;
+	}
+
+
+	function extract_text_nodes(node){
+		var nodes = [];
+		var children = node.getChildren();
+		var tmp_node = null;
+		for(var i=0; i < children.count(); i++){
+			tmp_node = children.getItem(i);
+			if (tmp_node.type == CKEDITOR.NODE_TEXT){
+				nodes.push(tmp_node);
+			}
+			else{
+				nodes = nodes.concat(extract_text_nodes(tmp_node));
+			}
+			// do recursive 	
+		}
+		return nodes;
+	}
+
+
+	function print_text(nodes){
+		var str = '';
+		var text = null;
+		$.each(nodes, function(index, value){
+			text = value.getText();
+			console.log(text.length);
+			str += text;
+			//console.log(key, value);
+		});
+
+		return str;
+	}
+
+	function find_start_node(nodes, MAX_LENGHT){
+	//	var str = '';
+		var text = null;
+		var text_len = 0;
+		var start_node = null;
+		$.each(nodes, function(index, value){
+			text = value.getText();
+			// console.log(text);
+			if(text_len + text.length < MAX_LENGHT){
+				text_len += text.length;
+			}
+			else{
+				start_node = {node : value, 
+							  offset : Math.abs(MAX_LENGHT - text_len )};
+				return false;
+			}
+			//console.log(key, value);
+		});
+
+		return start_node;
+	}
+
+
+	function find_end_node(nodes){
+		return nodes[nodes.length -1 ];
+	}
+
+	// function highlight_over(  ) {
+	// 	// Get the editor instance that we want to interact with.
+	// 	var editor = CKEDITOR.instances.editor1;
+
+	// 	var range = new CKEDITOR.dom.range( editor.document );
+
+	// 	var start_node = new CKEDITOR.dom.node( editor.document.getBody().getChildren().$[0].childNodes[0]);
+
+	// 	var end_node = new CKEDITOR.dom.node( editor.document.getBody().getChildren().$[0].childNodes[0]);
+	// 	range.setStart(start_node, 0);
+	// 	range.setEnd(end_node, 5);
+	// 	editor.getSelection().selectRanges( [ range ] );
+
+
+	// 	editor.execCommand("bold", false, null);
+
+	// 	 range.collapse(false);
+
+	// 	 editor.getSelection().selectRanges( [ range ] );
+
+	// }
+
+
+
+
+
+
+
+		</script>
+
+	
+</body>
+</html>
